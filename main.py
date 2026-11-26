@@ -8,14 +8,14 @@ BG = "#0f1720"
 PANEL = "#17232e"
 INK = "#f3f6f8"
 MUTED = "#a8b7c4"
-TEAL = "#42d6c5"
+TEAL = "#3ddad7"
 
 STORIES = [
-    ("HUANG RETURNS AS NVIDIA CEO", "Jensen Huang has returned to the chief executive role as Nvidia reshapes its leadership around the next phase of the AI boom."),
-    ("CROWDSTRIKE AND ZSCALER: $43.9B", "A proposed $43.9 billion combination would unite two major cybersecurity firms and redraw the contest for cloud security."),
-    ("700,000 RUSSIAN SOLDIERS KILLED", "A new estimate puts Russian military deaths at roughly 700,000 since the invasion of Ukraine, underscoring the war's staggering toll."),
-    ("RSF ADVANCES IN KHARTOUM", "Sudan's Rapid Support Forces have pushed farther into Khartoum as fighting intensifies and civilians face worsening danger."),
-    ("ICJ HEARS MYANMAR GENOCIDE CASE", "The International Court of Justice has opened hearings on allegations that Myanmar committed genocide against the Rohingya."),
+    ("US ARMY DETONATES IOWA STOCKPILE", "The Army called the detonation of a lead azide stockpile in Iowa a success after initial fears of a toxic plume drifting toward nearby communities."),
+    ("HUANG-LINKED FIRMS PLEDGED $301M", "Reuters-reviewed records show firms linked to Alice Huang raised financing against AI servers and equipment worth $301 million in China as US authorities probe suspected chip diversion."),
+    ("PLANE CRASH OFF MISSISSIPPI KILLS 6", "A small plane crashed off the Gulf coast during a family fishing trip, killing six members of an extended family in a single blow."),
+    ("NORTH KOREA ORDERS DIPLOMAT OUT", "Pyongyang demanded the closure of Switzerland's new diplomatic office and ordered one diplomat to leave, deepening a rare dispute with a neutral broker."),
+    ("COGNIZANT EYES S&P CAPITAL IQ OPS", "Cognizant is in talks to take over data and operations staff from S&P Global's India GCC, with around 1,500 employees potentially moving to its payroll."),
 ]
 
 
@@ -52,7 +52,7 @@ def main():
     draw.text((105, 73), "WORLD / BRIEFING", font=font(22, True), fill=TEAL)
     draw.text((105, 119), "FIVE STORIES", font=font(66, True), fill=INK)
     draw.text((105, 193), "MOVING THE WORLD TODAY", font=font(47, True), fill=INK)
-    draw.text((107, 267), "NOVEMBER 25 2026", font=font(22, True), fill=MUTED)
+    draw.text((107, 267), "November 26, 2026", font=font(22, True), fill=MUTED)
     draw.line((64, 326, 1016, 326), fill="#344552", width=2)
     head, body = font(27, True), font(20)
     y = 354
