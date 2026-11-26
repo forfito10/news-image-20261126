@@ -4,11 +4,11 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1080, 1350
-BG = "#0f1720"
+BG = "#101822"
 PANEL = "#17232e"
 INK = "#f3f6f8"
 MUTED = "#a8b7c4"
-TEAL = "#3ddad7"
+TEAL = "#4fd1c5"
 
 STORIES = [
     ("US ARMY DETONATES IOWA STOCKPILE", "The Army called the detonation of a lead azide stockpile in Iowa a success after initial fears of a toxic plume drifting toward nearby communities."),
@@ -20,55 +20,69 @@ STORIES = [
 
 
 def font(size, bold=False):
-    candidates = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/Library/Fonts/Arial Bold.ttf" if bold else "/Library/Fonts/Arial.ttf",
-    ]
-    for path in candidates:
+    regular = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    strong = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    mac_regular = "/Library/Fonts/Arial.ttf"
+    mac_bold = "/Library/Fonts/Arial Bold.ttf"
+    for path in (strong if bold else regular, mac_bold if bold else mac_regular):
         if os.path.exists(path):
             return ImageFont.truetype(path, size)
     return ImageFont.load_default()
 
 
 def wrap(draw, text, face, width):
-    words, lines, line = text.split(), [], ""
+    words = text.split()
+    lines = []
+    current = ""
     for word in words:
-        trial = f"{line} {word}".strip()
-        if draw.textlength(trial, font=face) <= width:
-            line = trial
+        candidate = f"{current} {word}".strip()
+        if draw.textlength(candidate, font=face) <= width:
+            current = candidate
         else:
-            if line:
-                lines.append(line)
-            line = word
-    if line:
-        lines.append(line)
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
     return lines
+
+
+def draw_story(draw, index, story, top, title_face, body_face):
+    headline, summary = story
+    bottom = top + 174
+    draw.rounded_rectangle((64, top, 1016, bottom), radius=14, fill=PANEL)
+    draw.rounded_rectangle((64, top, 71, bottom), radius=3, fill=TEAL)
+    draw.text((94, top + 22), f"{index:02d}", font=font(19, True), fill=TEAL)
+
+    text_x = 148
+    headline_lines = wrap(draw, headline, title_face, 820)
+    for row, line in enumerate(headline_lines):
+        draw.text((text_x, top + 17 + row * 34), line, font=title_face, fill=INK)
+
+    summary_top = top + 17 + max(1, len(headline_lines)) * 34 + 6
+    for row, line in enumerate(wrap(draw, summary, body_face, 820)[:2]):
+        draw.text((text_x, summary_top + row * 28), line, font=body_face, fill=MUTED)
 
 
 def main():
     image = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(image)
+
     draw.rounded_rectangle((64, 66, 76, 292), radius=6, fill=TEAL)
     draw.text((105, 73), "WORLD / BRIEFING", font=font(22, True), fill=TEAL)
     draw.text((105, 119), "FIVE STORIES", font=font(66, True), fill=INK)
     draw.text((105, 193), "MOVING THE WORLD TODAY", font=font(47, True), fill=INK)
+    draw.line((105, 254, 232, 254), fill="#d8b46a", width=2)
     draw.text((107, 267), "November 26, 2026", font=font(22, True), fill=MUTED)
     draw.line((64, 326, 1016, 326), fill="#344552", width=2)
-    head, body = font(27, True), font(20)
-    y = 354
-    for index, (headline, summary) in enumerate(STORIES, 1):
-        box = (64, y, 1016, y + 174)
-        draw.rounded_rectangle(box, radius=14, fill=PANEL)
-        draw.rounded_rectangle((64, y, 71, y + 174), radius=3, fill=TEAL)
-        draw.text((94, y + 22), f"{index:02d}", font=font(19, True), fill=TEAL)
-        x = 148
-        for n, line in enumerate(wrap(draw, headline, head, 820)):
-            draw.text((x, y + 17 + n * 34), line, font=head, fill=INK)
-        summary_y = y + 17 + max(1, len(wrap(draw, headline, head, 820))) * 34 + 6
-        for n, line in enumerate(wrap(draw, summary, body, 820)[:2]):
-            draw.text((x, summary_y + n * 28), line, font=body, fill=MUTED)
-        y += 190
-    draw.text((64, 1320), "compiled from global reporting - make.fun daily brief", font=font(16, True), fill="#708391")
+
+    title_face, body_face = font(27, True), font(20)
+    top = 354
+    for index, story in enumerate(STORIES, 1):
+        draw_story(draw, index, story, top, title_face, body_face)
+        top += 190
+
+    draw.text((64, 1320), "WORLD DESK  •  Reported 26 November 2026", font=font(16, True), fill="#708391")
     output = os.environ.get("MAKEFUN_OUTPUT_DIR", ".")
     os.makedirs(output, exist_ok=True)
     image.save(os.path.join(output, "entry.png"), format="PNG", optimize=True)
